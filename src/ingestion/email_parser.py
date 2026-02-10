@@ -42,7 +42,11 @@ def parse_email(msg: Any) -> EmailData:
             )
             
             # Check if it's an inline image (content-id present or disposition is inline)
-            if att.content_disposition == "inline" or hasattr(att, "content_id"):
+            is_inline = (
+                att.content_disposition == "inline" or
+                (hasattr(att, "content_id") and att.content_id is not None)
+            )
+            if is_inline:
                 inline_images.append(attachment_data)
                 logger.debug(f"Found inline image: {attachment_data.filename}")
             else:
