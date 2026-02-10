@@ -42,9 +42,8 @@ class TestEmailParser:
         mock_att.content_type = "application/pdf"
         mock_att.payload = b"fake pdf content"
         mock_att.content_disposition = "attachment"
-        # Explicitly set content_id to None and remove from hasattr check
-        mock_att.content_id = None
-        del mock_att.content_id  # Remove the attribute
+        # Remove content_id attribute so it's not inline
+        del mock_att.content_id
         
         # Mock email message
         mock_msg = mocker.MagicMock()
