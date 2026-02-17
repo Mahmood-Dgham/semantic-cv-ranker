@@ -160,7 +160,7 @@ class TestIMAPClient:
     def test_fetch_emails_filters_old_emails(self, mocker):
         """Test that old emails are filtered out."""
         from src.ingestion.imap_client import IMAPClient
-        from datetime import datetime, timezone, timedelta
+        from datetime import datetime, timezone
         
         # Mock old and new email messages
         old_msg = mocker.MagicMock()
@@ -177,7 +177,7 @@ class TestIMAPClient:
         new_msg.uid = "22222"
         new_msg.from_ = "new@example.com"
         new_msg.subject = "New Email"
-        new_msg.date = datetime.now(timezone.utc) + timedelta(seconds=10)
+        new_msg.date = datetime(2050, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
         new_msg.text = "New email body"
         new_msg.html = None
         new_msg.headers.get.return_value = ["<new-msg-id>"]
