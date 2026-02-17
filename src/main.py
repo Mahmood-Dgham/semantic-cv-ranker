@@ -82,6 +82,15 @@ def process_emails():
         # Connect to IMAP
         client.connect()
         
+        # Mark all existing emails as read if configured
+        if config.mail.mark_existing_as_read:
+            logger.info("MARK_EXISTING_AS_READ is enabled - marking all existing emails as read")
+            try:
+                client.mark_all_as_read()
+                logger.info("Ignoring all existing emails, only processing new emails from now on")
+            except Exception as e:
+                logger.error(f"Failed to mark existing emails as read: {e}")
+        
         # Fetch emails
         emails = client.fetch_emails()
         logger.info(f"Poll cycle: found {len(emails)} emails to process")
