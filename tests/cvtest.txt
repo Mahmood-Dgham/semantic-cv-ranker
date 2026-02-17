@@ -1,0 +1,11 @@
+Name: Mahmood Dgham
+Age: 25
+Email: mahmood@test.com
+
+SKILLS
+Python, JavaScript, Docker
+
+EXPERIENCE
+Software Developer at ABC Company (2023-2025)
+- Built web applications
+- Managed databases
