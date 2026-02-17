@@ -40,7 +40,8 @@ class IMAPClient(IngestionSource):
         self.folder = folder
         self.use_ssl = use_ssl
         self._mailbox: Optional[MailBox] = None
-        self._start_time: Optional[datetime.datetime] = None
+        # Record the time we start monitoring (only set once, not on reconnects)
+        self._start_time: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
     
     def connect(self) -> None:
         """Connect to IMAP server."""
@@ -54,9 +55,6 @@ class IMAPClient(IngestionSource):
             
             self._mailbox.login(self.username, self.password)
             self._mailbox.folder.set(self.folder)
-            
-            # Record the time we start monitoring
-            self._start_time = datetime.datetime.now(datetime.timezone.utc)
             
             logger.info(f"Connected to IMAP server {self.host}:{self.port}, folder: {self.folder}")
             logger.info(f"Will only process emails received after {self._start_time}")
@@ -86,20 +84,20 @@ class IMAPClient(IngestionSource):
         
         try:
             # Only fetch unseen emails received after the system started
-            start_date = self._start_time.date() if self._start_time else datetime.date.today()
+            start_date = self._start_time.date()
             
             # Fetch unseen emails from start_date onwards
             emails = []
             for msg in self._mailbox.fetch(AND(seen=False, date_gte=start_date)):
                 # Additionally check the exact datetime since IMAP date filter is date-only (no time)
-                if self._start_time and msg.date:
+                if msg.date:
                     # Make msg.date timezone-aware if needed for comparison
                     msg_date = msg.date
                     if msg_date.tzinfo is None:
                         msg_date = msg_date.replace(tzinfo=datetime.timezone.utc)
                     
                     if msg_date < self._start_time:
-                        logger.debug(f"Skipping old email: {msg.subject} (received {msg.date})")
+                        logger.debug(f"Skipping old email: {msg.subject} (received {msg_date})")
                         continue
                 
                 try:
