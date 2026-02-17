@@ -18,6 +18,7 @@ class MailConfig:
     password: str
     folder: str
     use_ssl: bool
+    mark_existing_as_read: bool
     
     @classmethod
     def from_env(cls) -> "MailConfig":
@@ -29,6 +30,7 @@ class MailConfig:
             password=os.getenv("IMAP_PASSWORD", ""),
             folder=os.getenv("IMAP_FOLDER", "INBOX"),
             use_ssl=os.getenv("IMAP_USE_SSL", "true").lower() == "true",
+            mark_existing_as_read=os.getenv("MARK_EXISTING_AS_READ", "false").lower() == "true",
         )
 
 
